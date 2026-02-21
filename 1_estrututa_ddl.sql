@@ -6,6 +6,8 @@ CREATE TABLE if not exists colaborador (
     departamento VARCHAR(50)
 );
 
+-- Ativos
+
 CREATE TABLE if not exists ativo (
     id_ativo SERIAL PRIMARY KEY,
     nome_ativo VARCHAR(100) NOT NULL,
@@ -15,6 +17,17 @@ CREATE TABLE if not exists ativo (
     id_responsavel INTEGER REFERENCES colaborador(id_colaborador)
 );
 
+-- Evolução do banco: adição de colunas de controle
+alter table ativo add column if not exists numero_serie varchar(50);
+alter table ativo add column if not exists status varchar(20) default 'Ativo';
+
+-- Regra de negocio: Status so pode aceitar valores especificos
+alter table ativo
+add constraint check_status
+check (status in ('Ativo','Em Manutenção', 'Desativado'));
+
+select * from ativo;
+
 CREATE TABLE if not exists manutencao (
     id_manutencao SERIAL PRIMARY KEY,
     id_ativo INTEGER REFERENCES ativo(id_ativo),
@@ -23,4 +36,6 @@ CREATE TABLE if not exists manutencao (
     data_fim TIMESTAMP,
     custo_reparo NUMERIC(10,2) DEFAULT 0
 );
+
+
 
